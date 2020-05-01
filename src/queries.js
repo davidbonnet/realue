@@ -6,18 +6,15 @@ import {
   isString,
   assign,
   pick,
-  upperFirst,
   lowerCase,
   isPlainObject,
   isArray,
   keys,
   mapKeys,
 } from 'lodash'
-import { compose, withPropsOnChange } from 'recompose'
 
-import { sleep, promisedProp, untilOnline } from './promises'
+import { sleep, untilOnline } from './promises'
 import { EMPTY_OBJECT, setProperty } from './immutables'
-import { getGlobal } from './tools'
 
 export class QueryError extends Error {
   /*
@@ -204,7 +201,7 @@ export function toFetchQuery(routes, transform = identity) {
   }
 }
 
-const { URLSearchParams } = getGlobal()
+const { URLSearchParams } = globalThis
 
 export function queryString(values) {
   /*
@@ -265,7 +262,7 @@ export const text = (next) => (query) =>
     },
   )
 
-export function fetch(fetch = getGlobal().fetch) {
+export function fetch(fetch = globalThis.fetch) {
   /*
   Calls the provided `fetch`, which defaults to the DON `fetch` function, with the incoming `query`.
   To be used in conjunction with `toFetchQuery()`.
@@ -336,47 +333,3 @@ export function concurrent(next) {
   }
   return request
 }
-
-// Component decorators
-
-export function queriedProp(options) {
-  /*
-  Calls `[requestName](query)` whenever the query at `[queryName]` changes and stores the result progress at `[valueName]`.
-  An abortion method at `[onAbortName]` is injected. If called before the query resolves, it aborts it, sending the exception to `[valueName].error`.
-  */
-  const queryName = isString(options) ? options : options.queryName
-  const {
-    valueName = queryName,
-    requestName = 'request',
-    onAbortName = `onAbort${upperFirst(queryName)}`,
-    AbortController = getGlobal().AbortController,
-  } = queryName === options ? EMPTY_OBJECT : options
-  return compose(
-    withPropsOnChange(
-      [queryName],
-      ({ [queryName]: query, [requestName]: request }) => {
-        const controller = AbortController && new AbortController()
-        return controller
-          ? {
-              [valueName]:
-                query && request({ ...query, signal: controller.signal }),
-              [onAbortName]: () => controller.abort(),
-            }
-          : {
-              [valueName]: query && request(query),
-            }
-      },
-    ),
-    promisedProp(valueName),
-  )
-}
-
-/*
-Calls `request(query)` whenever the query at `query` changes and stores the result progress at `value`.
-An abortion method at `onAbort` is injected. If called before the query resolves, it aborts it, sending the exception to `value.error`.
-*/
-export const queried = queriedProp({
-  queryName: 'query',
-  valueName: 'value',
-  onAbortName: 'onAbort',
-})

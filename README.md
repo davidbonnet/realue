@@ -89,7 +89,6 @@ The `realue` module exposes the following functions:
   - [`promised`](#promised)
   - [`toggledEditing`](#toggledediting)
   - [`fromValue()`](#fromvalue)
-  - [`flattenValue`](#flattenvalue)
   - [`persisted`](#persisted)
 - [Promised-based tools](#promised-based-tools)
   - [`on()`](#on)
@@ -109,22 +108,19 @@ The `realue` module exposes the following functions:
   - [`withImmediateEffect()`](#withimmediateeffect)
   - [`withGlobalEffect()`](#withglobaleffect)
   - [`withImmediateGlobalEffect()`](#withimmediateglobaleffect)
-  - [`onPropsChange()`](#onpropschange)
   - [`withHook()`](#withhook)
 - [Scoped-based decorators](#scoped-based-decorators)
   - [`scoped()`](#scoped)
   - [`returned()`](#returned)
-  - [`box()`](#box)
 - [Property-based decorators](#property-based-decorators)
   - [`defaultProp()`](#defaultprop)
-  - [`dynamicProp()`](#dynamicprop)
   - [`initialProp()`](#initialprop)
   - [`suspendableProp()`](#suspendableprop)
   - [`resilientProp()`](#resilientprop)
   - [`delayableProp()`](#delayableprop)
   - [`editableProp()`](#editableprop)
   - [`syncedProp()`](#syncedprop)
-  - [`cycledProp()`](#cycledprop)
+  - [`cyclableProp()`](#cyclableprop)
   - [`promisedProp()`](#promisedprop)
   - [`persistedProp()`](#persistedprop)
   - [`delayableHandler()`](#delayablehandler)
@@ -191,7 +187,6 @@ The `realue` module exposes the following functions:
   - [`same()`](#same)
   - [`different()`](#different)
 - [Formatters](#formatters)
-  - [`escapeRegex()`](#escaperegex)
   - [`replaceAll()`](#replaceall)
 
 <!-- /MarkdownTOC -->
@@ -316,7 +311,7 @@ Injects prop `cycle(payload)` that cycles the `value` prop through the values of
 
 > ⬆️ `{ value? }`
 
-> ⬇️ `{ value }`
+> ⬇️ `{ value, done, error }`
 
 Replaces promise `value` with `{ done, error, value }`.
 Before the promise resolves, `done` is `false` and `value` is `undefined`.
@@ -340,14 +335,6 @@ Sets the `editing` prop and enables its toggling through the `onToggleEditing()`
 > ⬇️ `{ onChange(value) }`
 
 Adapts `onChange` for components that call it by providing the `value` as a first argument. If the `path` is not `nil`, extracts the value from `get(value, path)`.
-
-#### `flattenValue`
-
-> ⬆️ `{ value }`
-
-> ⬇️ `{ ...value }`
-
-Merges the properties of the `value` object prop into the props.
 
 #### `persisted`
 
@@ -510,13 +497,6 @@ Runs `handler()` when the first element of this component is constructed (that i
 If the handler returns a callback, it is called when the last element of this component is unmounted.
 If the handler returns `false`, it will never be run again for this component.
 
-#### `onPropsChange()`
-
-> ➡️ `(shouldHandleOrKeys, handler, callOnMount = true)`
-
-Similar to `withPropsOnChange`, except that the values of the `handler` are not merged into the props.
-The `handler` is called when the component is first mounted if `callOnMount` is `true` (default value).
-
 #### `withHook()`
 
 > ➡️ `(hook, source, result)`
@@ -571,42 +551,21 @@ compose(
 
 #### `returned()`
 
-> ➡️ `(propsMapper)`
+> ➡️ `(propsMapperOrMap)`
 
 > ⬆️ `{ [any] }`
 
 > ⬇️ `{ __return }`
 
-Enables the injection of props from an isolated scope. The `propsMapperOrMap` can be a function that takes the current props and returns the props to inject, or a name list or map of prop names similar to the one provided to `picked()`.
+Enables the injection of props from an isolated scope. Similar to `picked()`, the `propsMapperOrMap` can be a function that takes the current props and returns the props to inject, or a name list or map of prop names similar to the one provided to `picked()`.
 
 <details>
   <summary>Examples</summary>
 
 ```js
-scoped(...decorators, returned(picked({ user: 'value' })))
+scoped(...decorators, returned({ user: 'value' }))
 
 scoped(...decorators, returned(omitted(['value'])))
-```
-
-</details>
-
-#### `box()`
-
-Boxes the execution of one or several `decorators` with the picked `inputMapperOrMap` and injects into the props the one picked by `outputMapperOrMap`.
-
-<details>
-  <summary>Example</summary>
-
-```js
-box(
-  ['value', 'request'],
-  compose(
-    withEntityQuery,
-    queried,
-    flattenValue,
-  ),
-  ['value', 'done', 'error'],
-)
 ```
 
 </details>
@@ -622,14 +581,6 @@ box(
 > ⬇️ `{ [name]? }`
 
 Sets `[name]` to `[defaultName]` if `[name]` is `nil`.
-
-#### `dynamicProp()`
-
-> ➡️ `(name)`
-
-> ⬇️ `{ [name]: true | false }`
-
-Injects a property `[name]` that cycles between `true` and `false` at each render.
 
 #### `initialProp()`
 
@@ -701,7 +652,7 @@ The prop can be updated with prop `[onChangeName](value, name, payload)`, which 
 Calling `[onPullName]()` sets the local value to the parent value.
 The return value of the optional parent prop `[onPullName](newValue, previousValue)` is used on prop `[name]` changes or when calling `[onPullName]()`.
 
-#### `cycledProp()`
+#### `cyclableProp()`
 
 > ➡️ `({ name, valuesName?, onCycleName?, onChangeName?, nameName? } | name)`
 
@@ -718,7 +669,7 @@ Calls `[onChangeName](value, name, payload)` with `name` taken from prop `[nameN
 
 > ⬆️ `{ [name]? }`
 
-> ⬇️ `{ [name] }`
+> ⬇️ `{ [name], [doneName], [errorName] }`
 
 Replaces the promise at prop `[name]` with `{ done, error, value }`.
 Before the promise resolves, `done` is `false` and `value` is `undefined`.
@@ -1324,12 +1275,6 @@ const withName = withPropsOnChange(
 </details>
 
 ### Formatters
-
-#### `escapeRegex()`
-
-> ➡️ `(pattern)`
-
-Escapes special characters of a given regular expresion `pattern`.
 
 #### `replaceAll()`
 

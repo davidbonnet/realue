@@ -1,6 +1,5 @@
-import { logProps } from './properties'
+import { logProps } from './decorators/logProps'
 import { logQuery } from './queries'
-import { getGlobal } from './tools'
 
-getGlobal().logProps = logProps
-getGlobal().logQuery = logQuery
+globalThis.logProps = logProps
+globalThis.logQuery = logQuery
