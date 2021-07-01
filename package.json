@@ -63,7 +63,7 @@
     "eslint-plugin-import": "^2.20.2",
     "esm": "^3.2.25",
     "fast-glob": "3.2.2",
-    "husky": "^4.2.5",
+    "husky": "^7.0.0",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^8.0.8",
