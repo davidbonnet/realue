@@ -51,7 +51,7 @@
     "@koa/cors": "^3.0.0",
     "ava": "^3.8.1",
     "babel-plugin-set-display-name": "^1.1.2",
-    "c8": "^7.1.1",
+    "c8": "^7.7.3",
     "chalk": "^4.1.1",
     "chokidar": "^3.4.0",
     "codecov": "^3.6.5",
