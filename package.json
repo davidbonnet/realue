@@ -47,7 +47,7 @@
     "@babel/core": "^7.9.6",
     "@babel/plugin-transform-runtime": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
-    "@babel/runtime": "^7.9.6",
+    "@babel/runtime": "^7.14.6",
     "@koa/cors": "^3.0.0",
     "ava": "^3.8.1",
     "babel-plugin-set-display-name": "^1.1.2",
