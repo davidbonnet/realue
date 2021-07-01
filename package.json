@@ -46,7 +46,7 @@
     "@babel/cli": "^7.14.3",
     "@babel/core": "^7.9.6",
     "@babel/plugin-transform-runtime": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-env": "^7.14.7",
     "@babel/runtime": "^7.9.6",
     "@koa/cors": "^3.0.0",
     "ava": "^3.8.1",
