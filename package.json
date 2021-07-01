@@ -68,7 +68,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^8.0.8",
     "parcel-bundler": "^1.12.5",
-    "prettier": "^2.0.5",
+    "prettier": "^2.3.2",
     "react-devtools": "^4.6.0",
     "react-dom": "^16.13.1",
     "react-test-renderer": "^16.13.1",
